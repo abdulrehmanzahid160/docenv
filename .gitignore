@@ -1,0 +1,11 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Packaging and virtual environments
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
