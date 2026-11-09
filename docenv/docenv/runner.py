@@ -102,19 +102,19 @@ def run_episode(scenario: Scenario, actor: Actor, *, max_actions: int = 20, hori
             history = list(env.transitions)
 
             plan = actor.plan(scenario, history)
-            plan_ns = time.monotonic_ns()
+            plan_ns = time.perf_counter_ns()
             va = monitor_view(scenario, history, plan, "A")
             vb = monitor_view(scenario, history, plan, "B")
             b = Boundary(t=t, attempt=attempt, primary=(attempt == 1), plan=plan, view_a=va,
                          view_b=vb, leakage=plan_leakage(plan, scenario), plan_ns=plan_ns,
-                         views_ns=time.monotonic_ns())
+                         views_ns=time.perf_counter_ns())
             if monitor_fn is not None:
                 ctx = {"scenario_id": scenario.scenario_id, "t": t, "attempt": attempt}
                 b.monitor_results = {c: monitor_fn(v, c, ctx) for c, v in (("A", va), ("B", vb))}
             boundaries.append(b)
 
             call = actor.act(scenario, history, plan)
-            b.command_ns = time.monotonic_ns()
+            b.command_ns = time.perf_counter_ns()
             env.step(call)
     except Exception as e:  # actor/API failure: keep what was recorded
         env.termination_reason = "error"
